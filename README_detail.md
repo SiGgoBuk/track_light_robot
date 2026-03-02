@@ -1,7 +1,7 @@
 # Tracking Light Robot (상세 문서)
 **야간 작업자를 위한 객체 추적 스마트 조명 시스템**
 
-> 📄 [간단 버전 보기](README.md)
+> 📄 [REAMME](README.md)
 
 ## 수상
 **2025 캡스톤디자인 장려상**
