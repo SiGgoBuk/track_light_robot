@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Wi-Fi 설정</title>
+    <style>
+        .wifi-entry {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .form-container {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .saved {
+            color: green;
+        }
+
+        .enterprise-label {
+            font-size: 0.9em;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <h2>Wi-Fi 연결</h2>
+
+    <div id="wifi-list">
+        {% for ssid in wifi_list %}
+        <div class="wifi-entry" onclick="selectWifi('{{ ssid }}', {{ 'true' if ssid in saved_list else 'false' }})">
+            {{ ssid }}
+            {% if ssid in saved_list %}
+                <span class="saved">(저장됨)</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="form-container" id="wifi-form">
+        <form method="POST" action="/submit">
+            <input type="hidden" name="ssid" id="form-ssid">
+
+            <label id="identity-label" style="display:none;">아이디 (Enterprise Wi-Fi만):</label><br>
+            <input type="text" name="identity" id="identity" style="display:none;"><br><br>
+
+            <label>비밀번호:</label><br>
+            <input type="password" name="password" id="password"><br><br>
+
+            <button type="submit">연결</button>
+        </form>
+    </div>
+
+    <script>
+        function selectWifi(ssid, isSaved) {
+            document.getElementById("form-ssid").value = ssid;
+            document.getElementById("wifi-form").classList.add("active");
+
+            // 엔터프라이즈 SSID 키워드 기준 분기
+            const enterpriseSSIDs = ['mjc', 'eduroam', 'schoolwifi'];
+            const isEnterprise = enterpriseSSIDs.includes(ssid.toLowerCase());
+
+            document.getElementById("identity-label").style.display = isEnterprise ? 'inline' : 'none';
+            document.getElementById("identity").style.display = isEnterprise ? 'inline' : 'none';
+
+            // 저장된 SSID면 비밀번호 입력 스킵 가능하도록 비우기
+            if (isSaved) {
+                document.getElementById("password").value = "";
+            }
+        }
+    </script>
+</body>
+</html>
