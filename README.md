@@ -1,4 +1,4 @@
-# Smart Tracking Light Robot
+#Tracking Light Robot
 **야간 작업자를 위한 객체 추적 스마트 조명 시스템**
 
 ## 수상
