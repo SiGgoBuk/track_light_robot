@@ -1,8 +1,6 @@
 # Smart Tracking Light Robot
 **야간 작업자를 위한 객체 추적 스마트 조명 시스템**
 
-![완성품](images/complete.jpg)
-
 ## 수상
 2025 캡스톤디자인 장려상
 
