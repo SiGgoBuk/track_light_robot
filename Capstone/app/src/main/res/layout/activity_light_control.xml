@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#738B80"
+    android:padding="24dp">
+
+    <!-- 전구 이미지 -->
+    <ImageView
+        android:id="@+id/lampImage"
+        android:layout_width="149dp"
+        android:layout_height="148dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="60dp"
+        android:src="@drawable/lamp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 스위치 -->
+    <Switch
+        android:id="@+id/lightSwitch"
+        android:layout_width="82dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="10dp"
+        android:thumb="@drawable/custom_switch_thumb"
+        android:track="@drawable/custom_switch_track"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleText" />
+
+    <!-- 타이틀 -->
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="Smart Light"
+        android:textColor="#FFFFFF"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/brightnessPercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="90%"
+        android:textSize="40sp"
+        android:textColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/lightSwitch"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="40dp" />
+
+    <!-- Brightness 라벨 -->
+    <TextView
+        android:id="@+id/brightnessLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Brightness"
+        android:textColor="#CCCCCC"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/brightnessPercent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="6dp" />
+
+    <!-- 밝기 슬라이더 -->
+    <LinearLayout
+        android:id="@+id/brightnessControl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="116dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/brightnessLabel">
+
+        <!-- 왼쪽 아이콘 -->
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_light_dim"
+            app:tint="#FFFFFF" />
+
+        <!-- 슬라이더 -->
+        <SeekBar
+            android:id="@+id/brightnessSeekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="100"
+            android:progress="90"
+            android:progressDrawable="@drawable/white_seekbar_progress"
+            android:thumb="@android:color/transparent" />
+
+        <!-- 오른쪽 아이콘 -->
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="12dp"
+            android:src="@drawable/ic_light_bright"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+    <!-- 컬러 선택 버튼 -->
+    <Button
+        android:id="@+id/colorPickerButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:backgroundTint="#FFA726"
+        android:text="Choose Color"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/brightnessControl" />
+
+    <!-- 홈으로 텍스트 -->
+    <TextView
+        android:id="@+id/homeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Go to home"
+        android:textColor="#CCCCCC"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/colorPickerButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

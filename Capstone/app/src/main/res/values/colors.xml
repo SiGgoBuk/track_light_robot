@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="green">#93bf85</color>
+    <color name="red">#FF4C4C</color>
+    <color name="yellow">#FFD54F</color>
+    <color name="yellow_pressed">#FFC107</color> <!-- 눌렸을 때 더 진한 노랑 -->
+
+</resources>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#738B80"
+    android:padding="24dp">
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="#738B80"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- 제목 -->
+            <TextView
+                android:id="@+id/analysisTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Product Analysis"
+                android:textColor="@android:color/white"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <!-- 조명 요약 -->
+            <TextView
+                android:layout_marginTop="24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="조명 요약"
+                android:textColor="@android:color/white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/avgBrightness"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💡 평균 밝기: 0 / 765"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp" />
+
+            <TextView
+                android:id="@+id/avgSensor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🌥 평균 조도 센서 값: 0"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="2dp" />
+
+            <TextView
+                android:id="@+id/mostUsedLightMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🧭 가장 많이 사용된 모드: 데이터 없음"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="2dp" />
+
+            <!-- 모터 요약 -->
+            <TextView
+                android:layout_marginTop="28dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="모터 요약"
+                android:textColor="@android:color/white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/avgMotorSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚙ 평균 좌/우 속도: 0 / 0"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp" />
+
+            <TextView
+                android:id="@+id/mostUsedMotorMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📘 가장 많이 사용된 모드: 데이터 없음"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="2dp" />
+
+            <TextView
+                android:id="@+id/avgDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🦭 평균 초음파 거리: 0 cm"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="2dp" />
+
+            <!-- 음성 명령 -->
+            <TextView
+                android:id="@+id/voiceCommandTitle"
+                android:layout_marginTop="28dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="등록된 음성 명령 매핑"
+                android:textColor="@android:color/white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/voiceCommandContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 뒤로가기 -->
+    <TextView
+        android:id="@+id/backText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Go to Back"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

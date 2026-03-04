@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모터 데이터 - 조명로봇 시스템</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .data-card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        .direction-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .direction-FORWARD { background: #28a745; color: white; }
+        .direction-BACKWARD { background: #dc3545; color: white; }
+        .direction-LEFT { background: #ffc107; color: black; }
+        .direction-RIGHT { background: #17a2b8; color: white; }
+        .direction-STOP { background: #6c757d; color: white; }
+        .sort-btn {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .sort-btn.active {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<!-- 네비게이션 -->
+<nav class="navbar navbar-dark mb-4">
+    <div class="container">
+        <a href="/dashboard" class="navbar-brand mb-0 h1">🤖 조명로봇 시스템</a>
+        <div class="d-flex">
+            <a href="/dashboard" class="btn btn-light btn-sm me-2">대시보드</a>
+            <a href="/logout" class="btn btn-outline-light btn-sm">로그아웃</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- 헤더 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>🎮 모터 데이터</h2>
+            <p class="text-muted mb-0" th:text="${product.name ?: '제품 ' + product.id}"></p>
+        </div>
+        <a th:href="@{/product/detail(productId=${product.id})}" class="btn btn-outline-primary">← 상세보기로 돌아가기</a>
+    </div>
+
+    <!-- 정렬 옵션 -->
+    <div class="mb-3">
+        <span class="me-2">정렬:</span>
+        <a th:href="@{/product/motor-data(productId=${product.id}, page=0, sort='desc')}"
+           class="btn btn-outline-secondary sort-btn"
+           th:classappend="${currentSort == 'desc'} ? 'active'">최신순</a>
+        <a th:href="@{/product/motor-data(productId=${product.id}, page=0, sort='asc')}"
+           class="btn btn-outline-secondary sort-btn"
+           th:classappend="${currentSort == 'asc'} ? 'active'">오래된순</a>
+        <span class="ms-3 text-muted">총 <strong th:text="${motorData.totalElements}"></strong>개</span>
+    </div>
+
+    <!-- 데이터가 없을 때 -->
+    <div th:if="${motorData.isEmpty()}" class="alert alert-info">
+        모터 데이터가 없습니다.
+    </div>
+
+    <!-- 데이터 목록 -->
+    <div th:each="data : ${motorData}" class="card data-card">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <strong>모드:</strong> <span th:text="${data.mode ?: '-'}"></span>
+                </div>
+                <div class="col-md-2">
+                    <span class="direction-badge"
+                          th:classappend="'direction-' + ${data.direction}"
+                          th:text="${data.direction ?: '-'}"></span>
+                </div>
+                <div class="col-md-3">
+                    <strong>속도:</strong>
+                    L: <span th:text="${data.leftSpeed ?: 0}"></span> /
+                    R: <span th:text="${data.rightSpeed ?: 0}"></span>
+                </div>
+                <div class="col-md-2">
+                    <span th:if="${data.ultrasonicCm}">
+                        <strong>거리:</strong> <span th:text="${data.ultrasonicCm}"></span>cm
+                    </span>
+                </div>
+                <div class="col-md-3 text-end">
+                    <small class="text-muted" th:text="${#temporals.format(data.recordedAt, 'yyyy-MM-dd HH:mm:ss')}"></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <nav th:if="${motorData.totalPages > 1}" aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- 처음으로 -->
+            <li class="page-item" th:classappend="${motorData.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/product/motor-data(productId=${product.id}, page=0, sort=${currentSort})}">&laquo;&laquo;</a>
+            </li>
+            <!-- 이전 -->
+            <li class="page-item" th:classappend="${motorData.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/product/motor-data(productId=${product.id}, page=${motorData.number - 1}, sort=${currentSort})}">&laquo;</a>
+            </li>
+
+            <!-- 페이지 번호 (현재 페이지 기준 앞뒤 2개씩) -->
+            <th:block th:with="start=${motorData.number > 2 ? motorData.number - 2 : 0},
+                              end=${motorData.number + 2 < motorData.totalPages - 1 ? motorData.number + 2 : motorData.totalPages - 1}">
+                <li class="page-item" th:each="i : ${#numbers.sequence(start, end)}"
+                    th:classappend="${i == motorData.number} ? 'active'">
+                    <a class="page-link" th:href="@{/product/motor-data(productId=${product.id}, page=${i}, sort=${currentSort})}" th:text="${i + 1}"></a>
+                </li>
+            </th:block>
+
+            <!-- 다음 -->
+            <li class="page-item" th:classappend="${motorData.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/product/motor-data(productId=${product.id}, page=${motorData.number + 1}, sort=${currentSort})}">&raquo;</a>
+            </li>
+            <!-- 마지막으로 -->
+            <li class="page-item" th:classappend="${motorData.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/product/motor-data(productId=${product.id}, page=${motorData.totalPages - 1}, sort=${currentSort})}">&raquo;&raquo;</a>
+            </li>
+        </ul>
+        <p class="text-center text-muted">
+            <span th:text="${motorData.number + 1}"></span> / <span th:text="${motorData.totalPages}"></span> 페이지
+        </p>
+    </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

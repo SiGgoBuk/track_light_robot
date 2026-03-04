@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제품 상세 - 조명로봇 시스템</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .stat-card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        .rgb-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .data-card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        .nav-tabs .nav-link {
+            color: #667eea;
+            font-weight: 600;
+        }
+        .nav-tabs .nav-link.active {
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+        }
+        .summary-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+<!-- 네비게이션 -->
+<nav class="navbar navbar-dark mb-4">
+    <div class="container">
+        <a href="/dashboard" class="navbar-brand mb-0 h1">🤖 조명로봇 시스템</a>
+        <div class="d-flex">
+            <a href="/dashboard" class="btn btn-light btn-sm me-2">대시보드</a>
+            <a href="/logout" class="btn btn-outline-light btn-sm">로그아웃</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- 제품 정보 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 th:text="${product.name ?: '제품 ' + product.id}"></h3>
+            <p class="text-muted mb-1">제품번호: <strong th:text="${product.productNumber}"></strong></p>
+            <p class="text-muted mb-0">
+                IP 주소:
+                <span th:if="${product.ipAddress}" th:text="${product.ipAddress}"></span>
+                <span th:unless="${product.ipAddress}" class="text-warning">할당된 IP 없음</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- 탭 메뉴 -->
+    <ul class="nav nav-tabs mb-4" id="dataTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="light-tab" data-bs-toggle="tab" data-bs-target="#light" type="button">
+                💡 조명 통계
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="motor-tab" data-bs-toggle="tab" data-bs-target="#motor" type="button">
+                🎮 모터 통계
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="voice-tab" data-bs-toggle="tab" data-bs-target="#voice" type="button">
+                🎤 음성 통계
+            </button>
+        </li>
+    </ul>
+
+    <!-- 탭 내용 -->
+    <div class="tab-content" id="dataTabContent">
+
+        <!-- 조명 통계 탭 -->
+        <div class="tab-pane fade show active" id="light" role="tabpanel">
+            <!-- 요약 통계 -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${lightStats.totalRecords}">0</div>
+                            <div class="stat-label">총 기록 수</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${lightStats.avgBrightness}">0</div>
+                            <div class="stat-label">평균 밝기</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${lightStats.autoModePercent}">0</div>
+                            <div class="stat-label">AUTO 모드 %</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${lightStats.appModePercent}">0</div>
+                            <div class="stat-label">APP 모드 %</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 모드 분포 차트 -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card stat-card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">📊 모드 사용 분포</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="lightModeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card stat-card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">🎨 자주 사용한 색상</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="summary-box">
+                                <div class="summary-item" th:each="color : ${lightStats.topColors}">
+                                    <span>
+                                        <span class="rgb-box me-2"
+                                              th:style="'background-color: rgb(' + ${color.r} + ',' + ${color.g} + ',' + ${color.b} + ')'"></span>
+                                        RGB(<span th:text="${color.r}"></span>, <span th:text="${color.g}"></span>, <span th:text="${color.b}"></span>)
+                                    </span>
+                                    <strong th:text="${color.count} + '회'"></strong>
+                                </div>
+                                <div th:if="${#lists.isEmpty(lightStats.topColors)}" class="text-muted text-center">
+                                    데이터가 없습니다
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최근 조명 데이터 -->
+            <div class="card stat-card mt-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📋 최근 조명 데이터</h5>
+                    <a th:href="@{/product/light-data(productId=${product.id})}" class="btn btn-sm btn-outline-primary">전체보기</a>
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(lightData)}" class="text-muted text-center py-3">
+                        조명 데이터가 없습니다.
+                    </div>
+                    <div th:each="data : ${lightData}" class="data-card card mb-2">
+                        <div class="card-body py-2">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <div class="rgb-box"
+                                         th:style="'background-color: rgb(' + ${data.ledColorR} + ',' + ${data.ledColorG} + ',' + ${data.ledColorB} + ')'">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong th:text="${data.brightnessMode}"></strong> |
+                                    RGB(<span th:text="${data.ledColorR}"></span>, <span th:text="${data.ledColorG}"></span>, <span th:text="${data.ledColorB}"></span>)
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <small class="text-muted" th:text="${#temporals.format(data.recordedAt, 'MM-dd HH:mm')}"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 모터 통계 탭 -->
+        <div class="tab-pane fade" id="motor" role="tabpanel">
+            <!-- 요약 통계 -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${motorStats.totalRecords}">0</div>
+                            <div class="stat-label">총 기록 수</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${motorStats.totalCommands}">0</div>
+                            <div class="stat-label">총 명령 수</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${motorStats.trackModePercent}">0</div>
+                            <div class="stat-label">TRACK 모드 %</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${motorStats.avgDistance}">0</div>
+                            <div class="stat-label">평균 감지거리(cm)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 차트 -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card stat-card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">📊 방향별 이동 횟수</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="motorDirectionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card stat-card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">⚙️ 모드 사용 분포</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="motorModeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 경로 추적 -->
+            <div class="card stat-card mt-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📍 예상 이동 경로</h5>
+                    <div>
+                        <select id="pathDataCount" class="form-select form-select-sm d-inline-block" style="width: auto;" onchange="drawPath()">
+                            <option value="10">최근 10개</option>
+                            <option value="30" selected>최근 30개</option>
+                            <option value="50">최근 50개</option>
+                            <option value="100">최근 100개</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary ms-2" onclick="drawPath()">🔄 새로고침</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <canvas id="pathCanvas" width="500" height="400" style="border: 1px solid #ddd; border-radius: 10px; width: 100%;"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="summary-box">
+                                <h6>📊 경로 요약</h6>
+                                <div class="summary-item">
+                                    <span>총 이동 거리</span>
+                                    <strong id="totalDistance">0</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span>전진 횟수</span>
+                                    <strong id="forwardCount">0</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span>후진 횟수</span>
+                                    <strong id="backwardCount">0</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span>좌회전 횟수</span>
+                                    <strong id="leftCount">0</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span>우회전 횟수</span>
+                                    <strong id="rightCount">0</strong>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    ※ 모터 속도와 방향을 기반으로 추정한 경로입니다.<br>
+                                    실제 이동 경로와 차이가 있을 수 있습니다.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최근 모터 데이터 -->
+            <div class="card stat-card mt-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📋 최근 모터 데이터</h5>
+                    <a th:href="@{/product/motor-data(productId=${product.id})}" class="btn btn-sm btn-outline-primary">전체보기</a>
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(motorData)}" class="text-muted text-center py-3">
+                        모터 데이터가 없습니다.
+                    </div>
+                    <div th:each="data : ${motorData}" class="data-card card mb-2">
+                        <div class="card-body py-2">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <strong th:text="${data.mode}"></strong> |
+                                    <span th:text="${data.direction}"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    속도: L:<span th:text="${data.leftSpeed}"></span> / R:<span th:text="${data.rightSpeed}"></span>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <small class="text-muted" th:text="${#temporals.format(data.recordedAt, 'MM-dd HH:mm')}"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 음성 통계 탭 -->
+        <div class="tab-pane fade" id="voice" role="tabpanel">
+            <!-- 요약 통계 (데이터 있을 때만) -->
+            <div th:if="${voiceStats.totalLogs > 0}" class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${voiceStats.totalLogs}">0</div>
+                            <div class="stat-label">총 음성 명령</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${voiceStats.matchedCount}">0</div>
+                            <div class="stat-label">인식 성공</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${voiceStats.unmatchedCount}">0</div>
+                            <div class="stat-label">인식 실패</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <div class="stat-number" th:text="${voiceStats.successRate}">0</div>
+                            <div class="stat-label">성공률 %</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 차트 및 요약 (데이터 있을 때만) -->
+            <div th:if="${voiceStats.totalLogs > 0}" class="row">
+                <div class="col-md-6">
+                    <div class="card stat-card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">📊 액션별 실행 횟수</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="voiceActionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card stat-card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">🗣️ 자주 사용한 명령어</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="summary-box">
+                                <div class="summary-item" th:each="cmd : ${voiceStats.topCommands}">
+                                    <span th:text="${cmd.inputText}"></span>
+                                    <strong th:text="${cmd.count} + '회'"></strong>
+                                </div>
+                                <div th:if="${#lists.isEmpty(voiceStats.topCommands)}" class="text-muted text-center">
+                                    데이터가 없습니다
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 음성 명령 관리 -->
+            <div class="card stat-card" th:classappend="${voiceStats.totalLogs == 0} ? '' : 'mt-4'">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">📝 음성 명령 관리</h5>
+                </div>
+                <div class="card-body">
+                    <!-- 새 명령 추가 폼 -->
+                    <div class="card mb-3" style="background: #f8f9fa;">
+                        <div class="card-body">
+                            <h6 class="mb-3">➕ 새 음성 명령 추가</h6>
+                            <form id="addVoiceCommandForm" onsubmit="addVoiceMapping(event)">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <label class="form-label">음성 입력 텍스트</label>
+                                        <input type="text" class="form-control" id="newVoiceText"
+                                               placeholder="예: 불 켜줘" required>
+                                        <small class="text-muted">사용자가 말할 명령어</small>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label">실행할 액션</label>
+                                        <select class="form-select" id="newVoiceAction" required>
+                                            <option value="">선택하세요</option>
+                                            <option value="1">조명 켜기</option>
+                                            <option value="2">조명 끄기</option>
+                                            <option value="3">추적 시작</option>
+                                            <option value="4">추적 정지</option>
+                                            <option value="5">전진</option>
+                                            <option value="6">후진</option>
+                                        </select>
+                                        <small class="text-muted">명령어 인식 시 실행될 동작</small>
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary w-100">추가</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 등록된 음성 명령 목록 -->
+                    <div th:if="${#lists.isEmpty(voiceCommands)}" class="alert alert-info">
+                        등록된 음성 명령이 없습니다. 위에서 새로운 명령을 추가해보세요!
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(voiceCommands)}">
+                        <h6 class="mb-3">📋 등록된 음성 명령 (<span th:text="${#lists.size(voiceCommands)}"></span>개)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th style="width: 40%">음성 입력</th>
+                                    <th style="width: 30%">실행 액션</th>
+                                    <th style="width: 20%">등록일</th>
+                                    <th style="width: 10%">관리</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="cmd : ${voiceCommands}">
+                                    <td>
+                                        <strong th:text="${cmd.inputText}"></strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary" th:text="${cmd.action.name}"></span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted" th:text="${#temporals.format(cmd.createdAt, 'yyyy-MM-dd')}"></small>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-danger"
+                                                th:data-id="${cmd.id}"
+                                                th:data-text="${cmd.inputText}"
+                                                onclick="deleteVoiceMapping(this)">
+                                            🗑️
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    // 모터 데이터 (서버에서 전달)
+    const allMotorData = /*[[${pathMotorData}]]*/ []; // 경로 추적용 데이터 (최대 100개)
+
+    console.log('Total motor data available:', allMotorData.length);
+
+    // 조명 모드 차트
+    const lightModeData = /*[[${lightStats.modeDistribution}]]*/ {};
+    if (Object.keys(lightModeData).length > 0) {
+        new Chart(document.getElementById('lightModeChart'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(lightModeData),
+                datasets: [{
+                    data: Object.values(lightModeData),
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    // 모터 방향 차트
+    const motorDirectionData = /*[[${motorStats.directionDistribution}]]*/ {};
+    if (Object.keys(motorDirectionData).length > 0) {
+        new Chart(document.getElementById('motorDirectionChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(motorDirectionData),
+                datasets: [{
+                    label: '이동 횟수',
+                    data: Object.values(motorDirectionData),
+                    backgroundColor: '#667eea'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    // 모터 모드 차트
+    const motorModeData = /*[[${motorStats.modeDistribution}]]*/ {};
+    if (Object.keys(motorModeData).length > 0) {
+        new Chart(document.getElementById('motorModeChart'), {
+            type: 'pie',
+            data: {
+                labels: Object.keys(motorModeData),
+                datasets: [{
+                    data: Object.values(motorModeData),
+                    backgroundColor: ['#11998e', '#38ef7d', '#f5576c']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    // 음성 액션 차트
+    const voiceActionData = /*[[${voiceStats.actionDistribution}]]*/ {};
+    if (Object.keys(voiceActionData).length > 0) {
+        new Chart(document.getElementById('voiceActionChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(voiceActionData),
+                datasets: [{
+                    label: '실행 횟수',
+                    data: Object.values(voiceActionData),
+                    backgroundColor: '#764ba2'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y'
+            }
+        });
+    }
+
+    // ==================== 음성 명령 관리 ====================
+
+    const productId = /*[[${product.id}]]*/ 0;
+
+    // 음성 명령 추가
+    function addVoiceMapping(event) {
+        event.preventDefault();
+
+        const inputText = document.getElementById('newVoiceText').value.trim();
+        const actionId = document.getElementById('newVoiceAction').value;
+
+        if (!inputText || !actionId) {
+            alert('모든 필드를 입력해주세요!');
+            return;
+        }
+
+        // API 호출
+        fetch('/api/voice-command', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                productId: productId,
+                inputText: inputText,
+                actionId: parseInt(actionId)
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('추가 실패');
+                }
+                return response.text();
+            })
+            .then(() => {
+                alert('음성 명령이 추가되었습니다!');
+                location.reload(); // 페이지 새로고침
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('음성 명령 추가에 실패했습니다.');
+            });
+    }
+
+    // 음성 명령 삭제
+    function deleteVoiceMapping(button) {
+        const id = button.getAttribute('data-id');
+        const text = button.getAttribute('data-text');
+
+        if (!confirm(`"${text}" 명령을 삭제하시겠습니까?`)) {
+            return;
+        }
+
+        // API 호출
+        fetch(`/api/voice-command/${id}`, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('삭제 실패');
+                }
+                return response.text();
+            })
+            .then(() => {
+                alert('음성 명령이 삭제되었습니다!');
+                location.reload(); // 페이지 새로고침
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('음성 명령 삭제에 실패했습니다.');
+            });
+    }
+
+
+    // ==================== 경로 추적 ====================
+
+    function drawPath() {
+        const count = parseInt(document.getElementById('pathDataCount').value);
+        const canvas = document.getElementById('pathCanvas');
+
+        if (!canvas) {
+            console.log('Canvas not found');
+            return;
+        }
+
+        const ctx = canvas.getContext('2d');
+
+        // Canvas 크기 설정
+        canvas.width = canvas.offsetWidth;
+        canvas.height = 400;
+
+        // Canvas 초기화
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 데이터가 없으면 종료
+        if (!allMotorData || allMotorData.length === 0) {
+            // 배경 그리드
+            drawGrid(ctx, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            ctx.fillStyle = '#999';
+            ctx.font = '16px Arial';
+            ctx.fillText('모터 데이터가 없습니다', centerX - 80, centerY - 30);
+
+            // 통계 초기화
+            document.getElementById('totalDistance').textContent = '0';
+            document.getElementById('forwardCount').textContent = '0 회';
+            document.getElementById('backwardCount').textContent = '0 회';
+            document.getElementById('leftCount').textContent = '0 회';
+            document.getElementById('rightCount').textContent = '0 회';
+            return;
+        }
+
+        // 최근 N개 데이터 가져오기
+        const recentData = allMotorData.slice(0, Math.min(count, allMotorData.length));
+        console.log(`Drawing path with ${recentData.length} data points`);
+
+        // ===== 1단계: 경로 계산 (실제 좌표) =====
+        let paths = [];
+        let x = 0;
+        let y = 0;
+        let angle = -Math.PI / 2; // 위쪽을 0도로 (12시 방향)
+
+        let totalDistance = 0;
+        let forwardCount = 0;
+        let backwardCount = 0;
+        let leftCount = 0;
+        let rightCount = 0;
+
+        let minX = 0, maxX = 0, minY = 0, maxY = 0;
+
+        for (let i = recentData.length - 1; i >= 0; i--) {
+            const data = recentData[i];
+            const direction = data.direction;
+            const mode = data.mode; // TRACK, MANUAL, STOP
+            const leftSpeed = data.leftSpeed || 0;
+            const rightSpeed = data.rightSpeed || 0;
+            const avgSpeed = (leftSpeed + rightSpeed) / 2;
+
+            // 이동 거리 계산 (속도에 비례)
+            const distance = avgSpeed / 10; // 스케일 조정
+
+            let newX = x;
+            let newY = y;
+            let color = '#667eea';
+            let moved = false;
+
+            if (direction === 'FORWARD') {
+                newX = x + Math.cos(angle) * distance;
+                newY = y + Math.sin(angle) * distance;
+                totalDistance += distance;
+                forwardCount++;
+                color = '#28a745'; // 녹색
+                moved = true;
+            } else if (direction === 'BACKWARD') {
+                newX = x - Math.cos(angle) * distance;
+                newY = y - Math.sin(angle) * distance;
+                totalDistance += distance;
+                backwardCount++;
+                color = '#dc3545'; // 빨간색
+                moved = true;
+            } else if (direction === 'LEFT') {
+                leftCount++;
+                color = '#ffc107'; // 노란색
+
+                // 모드별 회전 처리
+                if (mode === 'TRACK') {
+                    // TRACK 모드: 부드러운 곡선 회전 (추적하면서)
+                    const turnRate = Math.abs(rightSpeed - leftSpeed) / 255;
+                    angle -= turnRate * Math.PI / 4; // 최대 45도
+
+                    // 회전하면서 전진
+                    if (avgSpeed > 50) {
+                        newX = x + Math.cos(angle) * distance * 0.7;
+                        newY = y + Math.sin(angle) * distance * 0.7;
+                        moved = true;
+                    }
+                } else {
+                    // MANUAL/REMOTE 모드: 90도 제자리 회전
+                    angle -= Math.PI / 2; // 90도
+                    // 제자리 회전이므로 위치는 변하지 않음
+                }
+            } else if (direction === 'RIGHT') {
+                rightCount++;
+                color = '#17a2b8'; // 파란색
+
+                // 모드별 회전 처리
+                if (mode === 'TRACK') {
+                    // TRACK 모드: 부드러운 곡선 회전 (추적하면서)
+                    const turnRate = Math.abs(leftSpeed - rightSpeed) / 255;
+                    angle += turnRate * Math.PI / 4; // 최대 45도
+
+                    // 회전하면서 전진
+                    if (avgSpeed > 50) {
+                        newX = x + Math.cos(angle) * distance * 0.7;
+                        newY = y + Math.sin(angle) * distance * 0.7;
+                        moved = true;
+                    }
+                } else {
+                    // MANUAL/REMOTE 모드: 90도 제자리 회전
+                    angle += Math.PI / 2; // 90도
+                    // 제자리 회전이므로 위치는 변하지 않음
+                }
+            } else if (direction === 'STOP') {
+                // 정지는 그리지 않음
+                continue;
+            } else {
+                // 알 수 없는 방향은 건너뛰기
+                continue;
+            }
+
+            // 경로 저장
+            if (moved) {
+                paths.push({
+                    x1: x,
+                    y1: y,
+                    x2: newX,
+                    y2: newY,
+                    color: color
+                });
+
+                // 최소/최대 좌표 업데이트
+                minX = Math.min(minX, newX);
+                maxX = Math.max(maxX, newX);
+                minY = Math.min(minY, newY);
+                maxY = Math.max(maxY, newY);
+            }
+
+            x = newX;
+            y = newY;
+        }
+
+        // ===== 2단계: 자동 스케일링 =====
+        const pathWidth = maxX - minX;
+        const pathHeight = maxY - minY;
+
+        // 여백 추가
+        const margin = 50;
+        const availableWidth = canvas.width - margin * 2;
+        const availableHeight = canvas.height - margin * 2;
+
+        let scale = 1;
+        if (pathWidth > 0 && pathHeight > 0) {
+            const scaleX = availableWidth / pathWidth;
+            const scaleY = availableHeight / pathHeight;
+            scale = Math.min(scaleX, scaleY, 5); // 최대 5배 확대
+        }
+
+        // 중앙 정렬 오프셋
+        const offsetX = canvas.width / 2 - (minX + maxX) / 2 * scale;
+        const offsetY = canvas.height / 2 - (minY + maxY) / 2 * scale;
+
+        console.log(`Scale: ${scale.toFixed(2)}, Offset: (${offsetX.toFixed(0)}, ${offsetY.toFixed(0)})`);
+
+        // ===== 3단계: 배경 그리드 그리기 =====
+        drawGrid(ctx, canvas.width, canvas.height);
+
+        // ===== 4단계: 경로 그리기 =====
+        ctx.lineWidth = 3;
+        for (let path of paths) {
+            const sx = path.x1 * scale + offsetX;
+            const sy = path.y1 * scale + offsetY;
+            const ex = path.x2 * scale + offsetX;
+            const ey = path.y2 * scale + offsetY;
+
+            ctx.strokeStyle = path.color;
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.lineTo(ex, ey);
+            ctx.stroke();
+        }
+
+        // ===== 5단계: 시작/끝 지점 표시 =====
+        // 시작점
+        const startX = 0 * scale + offsetX;
+        const startY = 0 * scale + offsetY;
+        ctx.fillStyle = '#667eea';
+        ctx.beginPath();
+        ctx.arc(startX, startY, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.font = '12px Arial';
+        ctx.fillText('시작', startX + 10, startY - 10);
+
+        // 끝점
+        const endX = x * scale + offsetX;
+        const endY = y * scale + offsetY;
+        ctx.fillStyle = '#dc3545';
+        ctx.beginPath();
+        ctx.arc(endX, endY, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.fillText('현재', endX + 10, endY - 10);
+
+        // ===== 6단계: 통계 업데이트 =====
+        document.getElementById('totalDistance').textContent = Math.round(totalDistance) + ' 단위';
+        document.getElementById('forwardCount').textContent = forwardCount + ' 회';
+        document.getElementById('backwardCount').textContent = backwardCount + ' 회';
+        document.getElementById('leftCount').textContent = leftCount + ' 회';
+        document.getElementById('rightCount').textContent = rightCount + ' 회';
+
+        console.log('Path drawn successfully');
+    }
+
+    // 그리드 그리기 헬퍼 함수
+    function drawGrid(ctx, width, height) {
+        ctx.strokeStyle = '#e0e0e0';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < width; i += 50) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, height);
+            ctx.stroke();
+        }
+        for (let i = 0; i < height; i += 50) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(width, i);
+            ctx.stroke();
+        }
+    }
+
+    // 페이지 로드 시 경로 그리기
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, motor data count:', allMotorData ? allMotorData.length : 0);
+
+        // 모터 탭이 활성화될 때 경로 그리기
+        const motorTab = document.getElementById('motor-tab');
+        if (motorTab) {
+            motorTab.addEventListener('shown.bs.tab', function() {
+                console.log('Motor tab shown');
+                setTimeout(drawPath, 100); // 약간의 지연 후 그리기
+            });
+        }
+
+        // 드롭다운 변경 이벤트
+        const pathDataCount = document.getElementById('pathDataCount');
+        if (pathDataCount) {
+            pathDataCount.addEventListener('change', function() {
+                console.log('Data count changed to:', this.value);
+                drawPath();
+            });
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "255341618419",
+    "project_id": "smartlightapp-3d8ee",
+    "storage_bucket": "smartlightapp-3d8ee.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:255341618419:android:35fe90c294f59885930386",
+        "android_client_info": {
+          "package_name": "com.example.capstone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXX6epHIqpIUJKtZTWSsPlMxf3pWEog4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대시보드 - 조명로봇 시스템</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .product-card {
+            transition: transform 0.2s;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        .product-card .card-body {
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card .card-content {
+            flex: 1;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .ip-info {
+            min-height: 24px;
+        }
+    </style>
+</head>
+<body>
+<!-- 네비게이션 -->
+<nav class="navbar navbar-dark mb-4">
+    <div class="container">
+        <span class="navbar-brand mb-0 h1">🤖 조명로봇 시스템</span>
+        <div class="d-flex">
+            <span class="text-white me-3" th:text="${user.firstName} + '님'"></span>
+            <a href="/mypage" class="btn btn-light btn-sm me-2">마이페이지</a>
+            <a href="/logout" class="btn btn-outline-light btn-sm">로그아웃</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>내 제품 목록</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+            + 제품 추가
+        </button>
+    </div>
+
+    <!-- 성공/에러 메시지 -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- 제품이 없을 때 -->
+    <div th:if="${#lists.isEmpty(products)}" class="alert alert-info">
+        <h5>등록된 제품이 없습니다</h5>
+        <p>제품을 등록하면 여기에 표시됩니다.</p>
+    </div>
+
+    <!-- 제품 카드 -->
+    <div class="row">
+        <div class="col-md-4 mb-4" th:each="product : ${products}">
+            <div class="card product-card">
+                <div class="card-body">
+                    <div class="card-content">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title mb-0" th:text="${product.name ?: '제품 ' + product.id}"></h5>
+                            <span class="badge bg-success status-badge">온라인</span>
+                        </div>
+                        <p class="card-text text-muted mb-2">
+                            <small>제품번호: </small><strong th:text="${product.productNumber}"></strong>
+                        </p>
+                        <p class="card-text text-muted mb-3 ip-info">
+                            <small>IP: </small>
+                            <span th:if="${product.ipAddress}" th:text="${product.ipAddress}"></span>
+                            <span th:unless="${product.ipAddress}" class="text-warning">할당된 IP 없음</span>
+                        </p>
+                    </div>
+                    <a th:href="@{/product/detail(productId=${product.id})}"
+                       class="btn btn-primary btn-sm w-100">상세보기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 제품 추가 모달 -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">제품 추가</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="/product/register">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="productNumber" class="form-label">제품 번호 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="productNumber" name="productNumber"
+                               placeholder="제품 고유 번호를 입력하세요" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">제품 이름 (선택)</label>
+                        <input type="text" class="form-control" id="productName" name="name"
+                               placeholder="예: 거실 조명로봇">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">추가</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

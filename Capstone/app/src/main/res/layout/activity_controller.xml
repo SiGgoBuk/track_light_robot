@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#738B80"
+    android:padding="24dp">
+
+    <!-- 현재 동작 표시 텍스트 -->
+    <TextView
+        android:id="@+id/modeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Direction"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
+
+    <!-- 현재 동작 지속 시간 텍스트 -->
+    <TextView
+        android:id="@+id/durationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Holding: 0.0s"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/modeText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
+
+    <!-- FORWARD 버튼 -->
+    <Button
+        android:id="@+id/forward"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:text="Forward"
+        android:textSize="20sp"
+        android:backgroundTint="#FFD54F"
+        app:layout_constraintTop_toBottomOf="@id/durationText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="60dp" />
+
+    <!-- LEFT 버튼 -->
+    <Button
+        android:id="@+id/left"
+        android:layout_width="130dp"
+        android:layout_height="100dp"
+        android:text="Left"
+        android:textSize="23sp"
+        android:backgroundTint="#FFD54F"
+        app:layout_constraintTop_toBottomOf="@id/forward"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp" />
+
+    <!-- RIGHT 버튼 -->
+    <Button
+        android:id="@+id/right"
+        android:layout_width="130dp"
+        android:layout_height="100dp"
+        android:text="Right"
+        android:textSize="23sp"
+        android:backgroundTint="#FFD54F"
+        app:layout_constraintTop_toBottomOf="@id/forward"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="4dp" />
+
+    <!-- BACKWARD 버튼 -->
+    <Button
+        android:id="@+id/backward"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:text="Backward"
+        android:textSize="20sp"
+        android:backgroundTint="#FFD54F"
+        app:layout_constraintTop_toBottomOf="@id/left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp" />
+
+    <!-- 뒤로가기 -->
+    <TextView
+        android:id="@+id/backText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:text="Go to Back"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

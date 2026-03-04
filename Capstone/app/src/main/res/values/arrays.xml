@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="command_functions">
+        <item>켜기</item>
+        <item>끄기</item>
+        <item>밝기 증가</item>
+        <item>밝기 감소</item>
+        <item>추적</item>
+        <item>정지</item>
+    </string-array>
+</resources>
