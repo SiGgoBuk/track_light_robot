@@ -60,7 +60,7 @@
 
 ## 내가 맡은 역할
 
-### 소프트웨어 총괄 (100%)
+### 소프트웨어 총괄
 
 **1. Spring Boot API 서버 (Kotlin)**
 - RESTful API 설계 및 구현
