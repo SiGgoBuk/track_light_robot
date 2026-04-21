@@ -95,25 +95,24 @@
 ## 기술 스택
 
 ### Backend
-- **Spring Boot 3.2.5** + Kotlin
-- **MariaDB** (JPA)
-- Spring Security
+- Spring Boot 3.2.5 + Kotlin
+- MariaDB (JPA)
 - RESTful API
 
 ### Embedded
-- **Raspberry Pi 4** + Python
-- **Arduino Uno** + C/C++
+- Raspberry Pi 4 + Python
+- Arduino Uno + C/C++
 - GPIO, PWM, Serial
 
 ### AI/ML
-- **TensorFlow Lite** (MobileNet SSD v2)
-- **OpenCV** (객체 추적)
+- TensorFlow Lite (MobileNet SSD v2)
+- OpenCV
 - Google Speech Recognition
 
 ### Infrastructure
-- **Nginx** (Reverse Proxy)
-- **DuckDNS** (Dynamic DNS)
-- **Certbot** (SSL/TLS)
+- Nginx (Reverse Proxy)
+- DuckDNS (Dynamic DNS)
+- Certbot (SSL/TLS)
 - Ubuntu VM
 
 ### Hardware
@@ -129,21 +128,40 @@
 ## 시스템 아키텍처
 
 ```
-Android App / Web Dashboard
-            ↓
-    Spring Boot API Server
-    (Nginx + SSL + MariaDB)
-            ↓
-      Raspberry Pi 4
-      ├── 객체 추적 (Python)
-      ├── 모터 제어 (GPIO)
-      ├── 음성 인식
-      └── API 통신
-            ↓
-        Arduino
-        ├── RGB LED
-        └── 조도센서
+[ 사용자 (브라우저) ] 
+      │
+      ▼ (HTTPS / 443 포트)
+[ NGINX (Reverse Proxy) ] ──▶ SSL 인증서 적용 (DuckDNS)
+      │
+      ▼ (HTTP / 8080 포트 포워딩)
+[ Spring Boot ]
+      │
+      ▼
+[ 데이터베이스 (JPA/Hibernate) ]
+
+
 ```
+
+```
+[ 모바일 앱 ]
+      │
+      ▼
+[ HTTPS 요청 (POST) ]
+      │
+      ▼ (443 포트)
+[ NGINX ]
+      │
+      ▼
+[ Spring Boot API 서버 ]
+      │
+      ├─▶ [ 데이터 처리 ]
+      └─▶ [ DB 업데이트 ]
+              │
+              ▼
+[ 로봇 (Hardware) ]
+
+```
+
 
 ---
 
