@@ -1,4 +1,6 @@
-# Tracking Light Robot (상세 문서)
+> 이 문서는 프로젝트의 상세 설계 및 구현 내용을 기록한 문서입니다.
+
+# Tracking Light Robot (스마트 조명 로봇)
 **야간 작업자를 위한 객체 추적 스마트 조명 시스템**
 
 > 📄 [README](README.md)
