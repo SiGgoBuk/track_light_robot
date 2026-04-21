@@ -242,25 +242,20 @@ def track_object(objs, labels):
 
 ```
 ┌─────────────────────────────────┐
-│  Frontend                        │
+│  Frontend                       │
 │  - Android App (Kotlin)         │
 │  - Web Dashboard (Thymeleaf)    │
 └────────┬────────────────────────┘
          │ HTTPS
          ↓
 ┌─────────────────────────────────┐
-│  Backend API Server              │
+│  Backend API Server             │
 │  ┌─────────────────────────────┐│
 │  │ Spring Boot 3.2.5 (Kotlin)  ││
 │  │ - AuthController            ││
 │  │ - MobileApiController       ││
 │  │ - RoboticsApiController     ││
 │  │ - DashboardController       ││
-│  └─────────────────────────────┘│
-│  ┌─────────────────────────────┐│
-│  │ Spring Security             ││
-│  │ - JWT Authentication        ││
-│  │ - CORS Configuration        ││
 │  └─────────────────────────────┘│
 │  ┌─────────────────────────────┐│
 │  │ Spring Data JPA             ││
@@ -272,7 +267,7 @@ def track_object(objs, labels):
          │
          ↓
 ┌─────────────────────────────────┐
-│  Database                        │
+│  Database                       │
 │  - MariaDB (Ubuntu VM)          │
 └─────────────────────────────────┘
 
@@ -282,29 +277,29 @@ def track_object(objs, labels):
 │  Raspberry Pi 4 (Python)        │
 │  ┌─────────────────────────────┐│
 │  │ main_controller.py          ││
-│  │ - 전체 시스템 조율          ││
+│  │ - 전체 시스템 조율           ││
 │  └─────────────────────────────┘│
 │  ┌─────────────────────────────┐│
 │  │ human_follower.py           ││
 │  │ - MobileNet SSD v2          ││
-│  │ - OpenCV 영상처리           ││
-│  │ - 객체 추적 알고리즘        ││
+│  │ - OpenCV 영상처리            ││
+│  │ - 객체 추적 알고리즘         ││
 │  └─────────────────────────────┘│
 │  ┌─────────────────────────────┐│
 │  │ main_motor_controller.py    ││
 │  │ - GPIO 제어                 ││
-│  │ - PWM 모터 제어             ││
-│  │ - 센서 데이터 처리          ││
+│  │ - PWM 모터 제어              ││
+│  │ - 센서 데이터 처리           ││
 │  └─────────────────────────────┘│
 │  ┌─────────────────────────────┐│
 │  │ voice_command_runner.py     ││
 │  │ - Google Speech API         ││
-│  │ - 음성 명령 처리            ││
+│  │ - 음성 명령 처리             ││
 │  └─────────────────────────────┘│
 │  ┌─────────────────────────────┐│
 │  │ main_light_controller.py    ││
 │  │ - Serial 통신               ││
-│  │ - LED 제어 명령 전송        ││
+│  │ - LED 제어 명령 전송         ││
 │  └─────────────────────────────┘│
 └────────┬────────────────────────┘
          │ Serial (USB)
@@ -331,11 +326,12 @@ def track_object(objs, labels):
   - RESTful API 설계
   - DTO 패턴 적용
 
-- **구현 내용** (44개 파일)
+- **구현 내용**
   - AuthController: 사용자 인증/인가
   - MobileApiController: 앱 API
   - RoboticsApiController: 라즈베리파이 API
   - DashboardController: 웹 대시보드
+  - 외 모든 파일
 
 - **데이터베이스**
   - MariaDB JPA 연동
@@ -343,7 +339,6 @@ def track_object(objs, labels):
   - 관계 매핑 (OneToMany, ManyToOne)
 
 - **보안**
-  - Spring Security 설정
   - CORS 설정
   - CSRF 보호
 
@@ -828,11 +823,9 @@ Edge TPU 적용 (FPS 향상)
 - **2025 캡스톤디자인 장려상** 수상
 - 전체 소프트웨어 아키텍처 설계 및 구현
 - AI 기반 실시간 객체 추적 시스템 구현
-- 클라우드 기반 IoT 플랫폼 구축
 - HTTPS 보안 통신 구현
 - 팀 협업 경험
   - 소프트웨어/하드웨어 협업
-  - 산업체 멘토링 활용
 
 ---
 
