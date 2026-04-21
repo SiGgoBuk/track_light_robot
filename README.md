@@ -166,4 +166,4 @@ Android App / Web Dashboard
 **프로젝트 지원**: 명지전문대학교 캡스톤디자인  
 **팀**: 불켜조 (5인)
 
-**자세히보기**: > 📄 [README-detail](README_detail.md)
+**자세히보기**: 📄 [README-detail](README_detail.md)
