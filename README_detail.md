@@ -88,7 +88,7 @@
 
 - **MobileNet SSD v2** (TensorFlow Lite)
   - 사람 객체 인식 (COCO dataset)
-  - 실시간 처리 (평균 15 FPS)
+  - 실시간 처리
   - 정확도 > 85%
 
 - **추적 알고리즘**
